@@ -1,0 +1,26 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php: ['8.0', '8.3']
+    steps:
+      - uses: actions/checkout@v5
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: curl, dom, gd, mbstring, openssl, sqlite3
+          coverage: none
+      - run: composer install --no-interaction --prefer-dist
+      - run: composer validate --strict --no-check-publish
+      - run: composer check
+      - run: composer integration

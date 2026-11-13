@@ -1,0 +1,31 @@
+{
+    "name": "retroweb/proxy",
+    "description": "RetroWEB - PHP Web Proxy voor oude browsers",
+    "license": "MIT",
+    "type": "project",
+    "require": {
+        "php": ">=8.0",
+        "ext-gd": "*",
+        "fivefilters/readability.php": "^3.1"
+    },
+    "config": {
+        "platform": {
+            "php": "8.0.23"
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "RetroWEB\\": "src/"
+        }
+    },
+    "scripts": {
+        "check": [
+            "@php bin/verify.php",
+            "@php bin/lint.php",
+            "@php bin/static-check.php",
+            "@php tests/run.php"
+        ],
+        "test": "@php tests/run.php",
+        "integration": "bash tests/process-integration.sh"
+    }
+}

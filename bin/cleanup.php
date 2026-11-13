@@ -1,0 +1,5 @@
+<?php
+declare(strict_types=1);
+require dirname(__DIR__).'/vendor/autoload.php';
+use RetroWEB\Infrastructure\Persistence\{AggregateStatistics,FileImageCache,TrafficLimiter};
+$root=dirname(__DIR__);$now=time();$rules=[[$root.'/var/cache/snapshots/*.json',3600],[$root.'/var/data/settings/*.json',604800],[$root.'/var/data/upstream-cookies/*.json',3600]];$removed=0;foreach($rules as[$pattern,$ttl])foreach(glob($pattern)?:[]as$file)if(is_file($file)&&(filemtime($file)?:0)<$now-$ttl){unlink($file);$removed++;}$images=(new FileImageCache($root.'/var/cache/images'))->prune($now);$quotaRows=0;foreach(['direct-traffic-v2.sqlite','proxy-traffic-v2.sqlite']as$file)if(is_file($root.'/var/data/'.$file))$quotaRows+=(new TrafficLimiter($root.'/var/data/'.$file))->prune($now);$visitorRows=(new AggregateStatistics($root.'/var/data/statistics-v2.sqlite'))->pruneVisitors($now);echo"Removed $removed expired files, ".$images['removed']." cached images, $quotaRows old quota rows and $visitorRows expired visitor hashes.\n";
